@@ -1,0 +1,28 @@
+{
+  "name": "sentinelflow",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SentinelFlow - AI-assisted OT security monitoring platform (simulation-only).",
+  "packageManager": "pnpm@10.34.5",
+  "devDependencies": {
+    "pnpm": "^10.17.1"
+  },
+  "scripts": {
+    "dev": "npx pnpm -r --parallel dev",
+    "dev:web": "npx pnpm --filter @sentinelflow/web dev",
+    "dev:api": "npx pnpm --filter @sentinelflow/api dev",
+    "build": "npx pnpm -r build",
+    "typecheck": "npx pnpm -r typecheck",
+    "lint": "npx pnpm -r lint",
+    "test": "npx pnpm -r test"
+  },
+  "keywords": [
+    "ot-security",
+    "cybersecurity",
+    "simulation",
+    "react",
+    "typescript",
+    "express"
+  ],
+  "license": "MIT"
+}
