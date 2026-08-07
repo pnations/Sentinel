@@ -1,13 +1,53 @@
 :root {
+  --bg: #09131f;
+  --surface: #0b1623;
+  --surface-border: #334a5e;
+  --text: #d7e6f5;
+  --text-muted: #9cb4c9;
+  --accent: #b3522a;
+  --accent-border: #dd8f5a;
+  --ok: #7de8b8;
+  --warn: #f4c778;
+  --neutral: #9ac1df;
+
+  --space-1: 0.5rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.25rem;
+  --space-5: 1.5rem;
+
+  --text-body: 0.9rem;
+  --text-meta: 0.82rem;
+  --text-mono: 0.78rem;
+
   font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
   line-height: 1.45;
   font-weight: 400;
-  color: #d7e6f5;
-  background: radial-gradient(circle at 10% 0%, #0f2236, #09131f 65%);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  color: var(--text);
+  background: radial-gradient(circle at 10% 0%, #0f2236, var(--bg) 65%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --space-3: 1.1rem;
+    --space-4: 1.35rem;
+    --space-5: 1.75rem;
+    --text-body: 0.95rem;
+    --text-meta: 0.86rem;
+    --text-mono: 0.8rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --space-4: 1.5rem;
+    --space-5: 2rem;
+    --text-body: 1rem;
+    --text-meta: 0.9rem;
+    --text-mono: 0.84rem;
+  }
 }
 
 * {
@@ -18,6 +58,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  font-size: var(--text-body);
 }
 
 #root {
@@ -26,4 +67,10 @@ body {
 
 a {
   color: inherit;
+}
+
+button,
+select {
+  font: inherit;
+  touch-action: manipulation;
 }

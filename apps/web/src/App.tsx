@@ -128,12 +128,20 @@ function App() {
           ) : (
             events.map((event) => (
               <li key={event.id}>
-                <span className="event-time">{new Date(event.timestamp).toLocaleTimeString()}</span>
-                <span className={`event-severity ${event.payload.severity}`}>
-                  {event.payload.severity}
-                </span>
-                <span className="event-type">{event.payload.eventType}</span>
-                <p>{event.payload.description}</p>
+                <div className="event-meta">
+                  <span className="event-time">
+                    {new Date(event.timestamp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit"
+                    })}
+                  </span>
+                  <span className={`event-severity ${event.payload.severity}`}>
+                    {event.payload.severity}
+                  </span>
+                  <span className="event-type">{event.payload.eventType}</span>
+                </div>
+                <p className="event-description">{event.payload.description}</p>
               </li>
             ))
           )}
