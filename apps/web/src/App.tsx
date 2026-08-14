@@ -1,10 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { scenarios } from "./lib/scenarios";
-import { getHealth, openStream, simulateAttack, type StreamEnvelope } from "./services/api";
+import {
+  getHealth,
+  getRecentDetections,
+  getRecentIncidents,
+  openStream,
+  runScenario,
+  type PersistedDetection,
+  type PersistedIncident,
+  type StreamEnvelope
+} from "./services/api";
 
 function App() {
   const [events, setEvents] = useState<StreamEnvelope[]>([]);
+  const [detections, setDetections] = useState<PersistedDetection[]>([]);
+  const [incidents, setIncidents] = useState<PersistedIncident[]>([]);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [healthStatus, setHealthStatus] = useState("checking");
@@ -28,12 +39,24 @@ function App() {
         setError(err.message);
       });
 
-    const source = openStream(
-      (message) => {
+    getRecentDetections().then(setDetections).catch(() => undefined);
+    getRecentIncidents().then(setIncidents).catch(() => undefined);
+
+    const source = openStream({
+      onEvent: (message) => {
         setEvents((previous) => [message, ...previous].slice(0, 30));
       },
-      (isConnected) => setConnected(isConnected)
-    );
+      onFinding: (finding) => {
+        setDetections((previous) => [finding.payload, ...previous].slice(0, 20));
+      },
+      onIncident: (incident) => {
+        setIncidents((previous) => {
+          const others = previous.filter((item) => item.id !== incident.payload.id);
+          return [incident.payload, ...others].slice(0, 20);
+        });
+      },
+      onStatus: (isConnected) => setConnected(isConnected)
+    });
 
     return () => {
       source.close();
@@ -45,14 +68,9 @@ function App() {
     setError("");
 
     try {
-      await simulateAttack({
-        scenarioId: selectedScenario.id,
-        severity: selectedScenario.severity,
-        eventType: selectedScenario.eventType,
-        description: selectedScenario.description
-      });
+      await runScenario(selectedScenario.id);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to inject simulated event");
+      setError(err instanceof Error ? err.message : "Unable to run scenario");
     } finally {
       setLoading(false);
     }
@@ -90,6 +108,14 @@ function App() {
           <h2>Recent Events</h2>
           <p className="state neutral">{events.length}</p>
           <p className="meta">Events currently buffered in UI</p>
+        </article>
+
+        <article className="panel">
+          <h2>Open Incidents</h2>
+          <p className="state neutral">
+            {incidents.filter((incident) => incident.status !== "resolved").length}
+          </p>
+          <p className="meta">Correlated from deterministic detections</p>
         </article>
       </section>
 
@@ -142,6 +168,61 @@ function App() {
                   <span className="event-type">{event.payload.eventType}</span>
                 </div>
                 <p className="event-description">{event.payload.description}</p>
+              </li>
+            ))
+          )}
+        </ul>
+      </section>
+
+      <section className="panel" aria-label="Detections">
+        <h2>Detections</h2>
+
+        <ul className="event-list">
+          {detections.length === 0 ? (
+            <li className="empty">No detections yet.</li>
+          ) : (
+            detections.map((detection) => (
+              <li key={detection.id}>
+                <div className="event-meta">
+                  <span className="event-time">
+                    {new Date(detection.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit"
+                    })}
+                  </span>
+                  <span className={`event-severity ${detection.severity}`}>{detection.severity}</span>
+                  <span className="event-type">{detection.type.replace(/_/g, " ")}</span>
+                </div>
+                <p className="event-description">
+                  {detection.assetId} · confidence {Math.round(detection.confidence * 100)}%
+                </p>
+                {detection.evidence.map((line) => (
+                  <p key={line} className="event-description">
+                    {line}
+                  </p>
+                ))}
+              </li>
+            ))
+          )}
+        </ul>
+      </section>
+
+      <section className="panel" aria-label="Incidents">
+        <h2>Incidents</h2>
+
+        <ul className="event-list">
+          {incidents.length === 0 ? (
+            <li className="empty">No incidents yet.</li>
+          ) : (
+            incidents.map((incident) => (
+              <li key={incident.id}>
+                <div className="event-meta">
+                  <span className={`event-severity ${incident.severity}`}>{incident.severity}</span>
+                  <span className="event-type">{incident.status}</span>
+                  <span className="event-type">risk {incident.riskScore}</span>
+                </div>
+                <p className="event-description">{incident.title}</p>
               </li>
             ))
           )}
