@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { pool } from "../../db/client.js";
 import { createEvent, type CreateEventInput, type PersistedEvent } from "../events/eventService.js";
+import { evaluateEvent } from "../detections/detectionService.js";
 import type { SseBroker } from "../streaming/sseBroker.js";
 
 type AssetRecord = {
@@ -81,6 +82,7 @@ export class SimulationService {
     });
 
     this.publish(stored);
+    await this.runDetections(stored);
     return stored;
   }
 
@@ -163,6 +165,7 @@ export class SimulationService {
     });
 
     this.publish(stored);
+    await this.runDetections(stored);
   }
 
   private async emitNormalOperationEvent(): Promise<void> {
@@ -228,6 +231,7 @@ export class SimulationService {
     });
 
     this.publish(stored);
+    await this.runDetections(stored);
   }
 
   private async buildScenarioSteps(scenarioId: string): Promise<ScenarioStep[]> {
@@ -532,6 +536,31 @@ export class SimulationService {
       type: "event.created",
       payload: event
     });
+  }
+
+  private async runDetections(event: PersistedEvent): Promise<void> {
+    try {
+      const results = await evaluateEvent(event);
+
+      for (const result of results) {
+        this.sseBroker.publish({
+          id: result.detection.id,
+          timestamp: result.detection.createdAt,
+          type: "finding.created",
+          payload: result.detection
+        });
+
+        this.sseBroker.publish({
+          id: result.incident.id,
+          timestamp: result.incident.updatedAt,
+          type: result.incidentIsNew ? "incident.created" : "incident.updated",
+          payload: result.incident
+        });
+      }
+    } catch (error) {
+      // Detection failures must never block event ingestion or the SSE stream.
+      console.error("[sentinelh20-api] detection evaluation failed", error);
+    }
   }
 
   private async enrichWithAssetIps(event: CreateEventInput): Promise<CreateEventInput> {

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import type { Express } from "express";
 import { env } from "./config/env.js";
+import { registerDetectionRoutes } from "./routes/detections.js";
 import { registerEventRoutes } from "./routes/events.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerSimulationRoutes } from "./routes/simulation.js";
@@ -32,6 +33,7 @@ export function createApp(): AppContext {
   registerHealthRoutes(api);
   registerStreamRoutes(api, sseBroker);
   registerEventRoutes(api);
+  registerDetectionRoutes(api);
   registerSimulationRoutes(api, simulationService);
 
   app.use("/api", api);

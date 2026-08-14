@@ -104,11 +104,12 @@ Implemented foundation items:
 - PostgreSQL schema and migration baseline
 - North River bootstrap seed
 - frontend Phase 1 shell with attack scenario selector and live event feed
+- deterministic detection engine with incident correlation and risk scoring
 
 Next implementation targets:
-- normal operations telemetry generator
-- deterministic detection engine
-- incident correlation and risk scoring
+- normal operations telemetry generator variety (more templates, auto-start)
+- frontend surfacing of detections and incidents
+- AI-assisted investigation
 
 ## Deployment Notes
 
