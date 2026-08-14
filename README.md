@@ -1,12 +1,12 @@
-# SentinelFlow
+# SentinelH20
 
 AI-assisted security monitoring for operational technology.
 
-SentinelFlow v1 is a simulation-only OT security platform centered on a fictional facility, North River Water Utility. It combines deterministic detection, incident correlation, risk scoring, AI-assisted investigation, and human-approved simulated response actions.
+SentinelH20 v1 is a simulation-only OT security platform centered on a fictional facility, North River Water Utility. It combines deterministic detection, incident correlation, risk scoring, AI-assisted investigation, and human-approved simulated response actions.
 
 ## Security Boundary
 
-SentinelFlow v1 is defensive and simulation-only.
+SentinelH20 v1 is defensive and simulation-only.
 
 It does not scan public networks, exploit vulnerabilities, brute-force authentication, interact with real PLCs, or issue commands to real industrial equipment.
 
@@ -63,7 +63,7 @@ npx pnpm install
 Apply baseline migration and seed North River data.
 
 ```bash
-npx pnpm --filter @sentinelflow/api db:seed
+npx pnpm --filter @sentinelh20/api db:seed
 ```
 
 This creates required core tables and seeds:

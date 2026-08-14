@@ -113,12 +113,12 @@ async function run() {
     );
   }
 
-  console.log(`[sentinelflow-api] bootstrap complete: ${assets.length} assets, ${scenarios.length} scenarios`);
+  console.log(`[sentinelh20-api] bootstrap complete: ${assets.length} assets, ${scenarios.length} scenarios`);
 }
 
 run()
   .catch((error) => {
-    console.error("[sentinelflow-api] bootstrap failed", error);
+    console.error("[sentinelh20-api] bootstrap failed", error);
     process.exitCode = 1;
   })
   .finally(async () => {

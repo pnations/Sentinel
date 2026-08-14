@@ -1,4 +1,4 @@
-# SentinelFlow Architecture (v1)
+# SentinelH20 Architecture (v1)
 
 ## Core Pipeline
 

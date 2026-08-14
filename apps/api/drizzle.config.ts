@@ -5,6 +5,6 @@ export default {
   out: "./src/db/migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? "postgres://postgres:postgres@localhost:5432/sentinelflow"
+    url: process.env.DATABASE_URL ?? "postgres://postgres:postgres@localhost:5432/sentinelh20"
   }
 } satisfies Config;

@@ -61,7 +61,7 @@ function App() {
   return (
     <main className="app-shell">
       <header className="hero">
-        <p className="tag">SentinelFlow</p>
+        <p className="tag">SentinelH20</p>
         <h1>AI-assisted OT security monitoring for North River Water Utility</h1>
         <p className="subtitle">
           Deterministic detection first. AI-assisted investigation second. Human-approved

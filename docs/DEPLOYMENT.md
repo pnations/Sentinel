@@ -22,17 +22,17 @@ Frontend:
 ## Backend Deployment Steps
 
 1. Build backend:
-   - npx pnpm --filter @sentinelflow/api build
+   - npx pnpm --filter @sentinelh20/api build
 2. Run migration/seed during first deploy or release step:
-   - npx pnpm --filter @sentinelflow/api db:seed
+   - npx pnpm --filter @sentinelh20/api db:seed
 3. Start service:
-   - npx pnpm --filter @sentinelflow/api start
+   - npx pnpm --filter @sentinelh20/api start
 4. Restrict CORS to frontend origin using FRONTEND_URL.
 
 ## Frontend Deployment Steps
 
 1. Build frontend:
-   - npx pnpm --filter @sentinelflow/web build
+   - npx pnpm --filter @sentinelh20/web build
 2. Publish apps/web/dist.
 3. Set VITE_API_URL to deployed backend URL.
 

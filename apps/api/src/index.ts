@@ -4,7 +4,7 @@ import { env } from "./config/env.js";
 const { app, sseBroker, simulationService } = createApp();
 
 const server = app.listen(env.PORT, () => {
-  console.log(`[sentinelflow-api] listening on port ${env.PORT}`);
+  console.log(`[sentinelh20-api] listening on port ${env.PORT}`);
 });
 
 const heartbeatInterval = setInterval(() => {
@@ -12,7 +12,7 @@ const heartbeatInterval = setInterval(() => {
 }, 20_000);
 
 const shutdown = (signal: NodeJS.Signals) => {
-  console.log(`[sentinelflow-api] received ${signal}, shutting down`);
+  console.log(`[sentinelh20-api] received ${signal}, shutting down`);
   clearInterval(heartbeatInterval);
   simulationService.stopAll();
   server.close(() => {

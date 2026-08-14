@@ -9,7 +9,7 @@ const envSchema = z.object({
   DATABASE_URL: z
     .string()
     .min(1)
-    .default("postgres://postgres:postgres@localhost:5432/sentinelflow"),
+    .default("postgres://postgres:postgres@localhost:5432/sentinelh20"),
   OPENAI_API_KEY: z.string().optional(),
   NVD_API_KEY: z.string().optional(),
   CISA_KEV_URL: z
