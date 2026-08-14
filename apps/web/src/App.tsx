@@ -3,8 +3,6 @@ import "./App.css";
 import { scenarios } from "./lib/scenarios";
 import {
   getHealth,
-  getRecentDetections,
-  getRecentIncidents,
   openStream,
   runScenario,
   type PersistedDetection,
@@ -38,9 +36,6 @@ function App() {
         setHealthStatus("offline");
         setError(err.message);
       });
-
-    getRecentDetections().then(setDetections).catch(() => undefined);
-    getRecentIncidents().then(setIncidents).catch(() => undefined);
 
     const source = openStream({
       onEvent: (message) => {
