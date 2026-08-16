@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { pool } from "../../db/client.js";
 import { env } from "../../config/env.js";
 import { markIncidentInvestigating, type PersistedIncident } from "../detections/detectionService.js";
+import { createProposedActions } from "../response/responseActionService.js";
 import type { SseBroker } from "../streaming/sseBroker.js";
 
 export type PersistedAiAnalysis = {
@@ -338,6 +339,7 @@ export class InvestigationService {
 
     const analysis = parseAnalysis(response.output_text);
     const stored = await persistAnalysis(incidentId, response.model, analysis);
+    await createProposedActions(incidentId, analysis.recommendedActions);
 
     this.sseBroker.publish({
       id: stored.id,

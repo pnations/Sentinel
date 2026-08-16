@@ -6,6 +6,7 @@ import { registerAiRoutes } from "./routes/ai.js";
 import { registerDetectionRoutes } from "./routes/detections.js";
 import { registerEventRoutes } from "./routes/events.js";
 import { registerHealthRoutes } from "./routes/health.js";
+import { registerResponseActionRoutes } from "./routes/responseActions.js";
 import { registerSimulationRoutes } from "./routes/simulation.js";
 import { registerStreamRoutes } from "./routes/stream.js";
 import { InvestigationService } from "./services/ai/investigationService.js";
@@ -40,6 +41,7 @@ export function createApp(): AppContext {
   registerDetectionRoutes(api);
   registerSimulationRoutes(api, simulationService);
   registerAiRoutes(api, investigationService);
+  registerResponseActionRoutes(api, sseBroker);
 
   app.use("/api", api);
 

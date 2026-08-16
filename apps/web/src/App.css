@@ -144,6 +144,119 @@ button:disabled {
   border-top: 1px dashed rgba(55, 73, 88, 0.7);
 }
 
+.approval-pill {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: var(--text-mono);
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+}
+
+.approval-pill.pending {
+  background: rgba(244, 199, 120, 0.22);
+  color: var(--warn);
+}
+
+.approval-pill.approved {
+  background: rgba(125, 232, 184, 0.22);
+  color: var(--ok);
+}
+
+.approval-pill.rejected {
+  background: rgba(255, 155, 155, 0.2);
+  color: #ff9b9b;
+}
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 14, 0.72);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 50;
+}
+
+.drawer-panel {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--surface);
+  border-left: 1px solid var(--surface-border);
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.drawer-close {
+  width: auto;
+  min-width: 0;
+  padding: 0.5rem 0.9rem;
+  background: transparent;
+  border: 1px solid var(--surface-border);
+  color: var(--text-muted);
+}
+
+.drawer-title {
+  margin: 0;
+  color: #f4f8fc;
+  font-size: clamp(1.05rem, 3.6vw, 1.3rem);
+}
+
+.reviewer-identity {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.reviewer-identity input[type="text"] {
+  background: #0d1a28;
+  color: #edf5fc;
+  border: 1px solid #335270;
+  border-radius: 10px;
+  padding: 0.75rem;
+  width: 100%;
+  min-height: 44px;
+}
+
+.button-link {
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--neutral);
+  text-decoration: underline;
+  font-weight: 400;
+}
+
+.response-action-controls {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+.response-action-controls button {
+  width: auto;
+  min-width: 0;
+  flex: 1;
+}
+
+.button-reject {
+  background: transparent;
+  color: #ff9b9b;
+  border: 1px solid #ff9b9b;
+}
+
 .event-meta {
   display: flex;
   flex-wrap: wrap;
@@ -236,6 +349,15 @@ button:disabled {
 
   .event-list li {
     padding: 0.9rem;
+  }
+
+  .drawer-panel {
+    max-width: 480px;
+  }
+
+  .response-action-controls button,
+  .drawer-close {
+    min-width: 0;
   }
 }
 

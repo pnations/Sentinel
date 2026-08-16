@@ -5,6 +5,7 @@ import {
   type PersistedAiAnalysis,
   type PersistedDetection,
   type PersistedIncident,
+  type PersistedResponseAction,
   type StreamEnvelope
 } from "../services/api";
 
@@ -18,11 +19,24 @@ export function useSentinelStream() {
   const [detections, setDetections] = useState<PersistedDetection[]>([]);
   const [incidents, setIncidents] = useState<PersistedIncident[]>([]);
   const [analyses, setAnalyses] = useState<Record<string, PersistedAiAnalysis>>({});
+  const [responseActions, setResponseActions] = useState<Record<string, PersistedResponseAction[]>>({});
   const [connected, setConnected] = useState(false);
   const [health, setHealth] = useState<HealthState>({ status: "checking", timestamp: "" });
 
   const recordAnalysis = useCallback((analysis: PersistedAiAnalysis) => {
     setAnalyses((previous) => ({ ...previous, [analysis.incidentId]: analysis }));
+  }, []);
+
+  const setIncidentResponseActions = useCallback((incidentId: string, actions: PersistedResponseAction[]) => {
+    setResponseActions((previous) => ({ ...previous, [incidentId]: actions }));
+  }, []);
+
+  const recordResponseAction = useCallback((action: PersistedResponseAction) => {
+    setResponseActions((previous) => {
+      const existing = previous[action.incidentId] ?? [];
+      const others = existing.filter((item) => item.id !== action.id);
+      return { ...previous, [action.incidentId]: [...others, action] };
+    });
   }, []);
 
   useEffect(() => {
@@ -44,13 +58,25 @@ export function useSentinelStream() {
         });
       },
       onAnalysis: (analysis) => recordAnalysis(analysis.payload),
+      onResponseAction: (action) => recordResponseAction(action.payload),
       onStatus: setConnected
     });
 
     return () => {
       source.close();
     };
-  }, [recordAnalysis]);
+  }, [recordAnalysis, recordResponseAction]);
 
-  return { events, detections, incidents, analyses, connected, health, recordAnalysis };
+  return {
+    events,
+    detections,
+    incidents,
+    analyses,
+    responseActions,
+    connected,
+    health,
+    recordAnalysis,
+    setIncidentResponseActions,
+    recordResponseAction
+  };
 }

@@ -35,6 +35,7 @@ export type PersistedIncident = {
   confidence: number;
   riskScore: number;
   riskExplanation: Record<string, unknown>;
+  approvalState: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -75,6 +76,26 @@ export type AiAnalysisEnvelope = {
   payload: PersistedAiAnalysis;
 };
 
+export type PersistedResponseAction = {
+  id: string;
+  incidentId: string;
+  actionType: string;
+  reason: string;
+  approvalState: string;
+  approvedBy: string | null;
+  approvedAt: string | null;
+  executedAt: string | null;
+  executionResult: Record<string, unknown>;
+  createdAt: string;
+};
+
+export type ResponseActionEnvelope = {
+  id: string;
+  type: "response.action.updated";
+  timestamp: string;
+  payload: PersistedResponseAction;
+};
+
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -100,11 +121,30 @@ export function runScenario(scenarioId: string): Promise<{ runId: string; stepCo
   return request(`/api/simulation/scenarios/${scenarioId}/run`, { method: "POST" });
 }
 
+export function getResponseActions(incidentId: string): Promise<PersistedResponseAction[]> {
+  return request<{ items: PersistedResponseAction[] }>(`/api/incidents/${incidentId}/response-actions`).then(
+    (body) => body.items
+  );
+}
+
+export function decideResponseAction(
+  actionId: string,
+  decision: "approved" | "rejected",
+  approvedBy: string
+): Promise<PersistedResponseAction> {
+  return request(`/api/response-actions/${actionId}/decision`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ decision, approvedBy })
+  });
+}
+
 export function openStream(handlers: {
   onEvent: (event: StreamEnvelope) => void;
   onFinding: (finding: FindingEnvelope) => void;
   onIncident: (incident: IncidentEnvelope) => void;
   onAnalysis: (analysis: AiAnalysisEnvelope) => void;
+  onResponseAction: (action: ResponseActionEnvelope) => void;
   onStatus: (connected: boolean) => void;
 }): EventSource {
   const source = new EventSource(`${API_URL}/api/stream`);
@@ -135,6 +175,11 @@ export function openStream(handlers: {
   source.addEventListener("ai.analysis.created", (raw) => {
     const typed = raw as MessageEvent<string>;
     handlers.onAnalysis(JSON.parse(typed.data) as AiAnalysisEnvelope);
+  });
+
+  source.addEventListener("response.action.updated", (raw) => {
+    const typed = raw as MessageEvent<string>;
+    handlers.onResponseAction(JSON.parse(typed.data) as ResponseActionEnvelope);
   });
 
   return source;

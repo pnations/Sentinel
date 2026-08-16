@@ -23,6 +23,7 @@ export type PersistedIncident = {
   confidence: number;
   riskScore: number;
   riskExplanation: Record<string, unknown>;
+  approvalState: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -63,6 +64,7 @@ type IncidentRow = {
   confidence: number;
   risk_score: number;
   risk_explanation: Record<string, unknown>;
+  approval_state: string;
   created_at: Date;
   updated_at: Date;
 };
@@ -76,6 +78,7 @@ function mapIncidentRow(row: IncidentRow): PersistedIncident {
     confidence: row.confidence,
     riskScore: row.risk_score,
     riskExplanation: row.risk_explanation,
+    approvalState: row.approval_state,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString()
   };
@@ -97,7 +100,7 @@ async function findOrCreateIncident(
 ): Promise<{ record: PersistedIncident; isNew: boolean }> {
   const existing = await pool.query<IncidentRow>(
     `
-      SELECT i.id, i.title, i.severity, i.status, i.confidence, i.risk_score, i.risk_explanation, i.created_at, i.updated_at
+      SELECT i.id, i.title, i.severity, i.status, i.confidence, i.risk_score, i.risk_explanation, i.approval_state, i.created_at, i.updated_at
       FROM incidents i
       JOIN detections d ON d.incident_id = i.id
       WHERE d.asset_id = $1
@@ -118,7 +121,7 @@ async function findOrCreateIncident(
         UPDATE incidents
         SET severity = $1, risk_score = $2, confidence = $3, updated_at = now()
         WHERE id = $4
-        RETURNING id, title, severity, status, confidence, risk_score, risk_explanation, created_at, updated_at
+        RETURNING id, title, severity, status, confidence, risk_score, risk_explanation, approval_state, created_at, updated_at
       `,
       [
         maxSeverity(current.severity, candidate.severity),
@@ -149,7 +152,7 @@ async function findOrCreateIncident(
     `
       INSERT INTO incidents (id, title, severity, status, confidence, risk_score, risk_explanation)
       VALUES ($1, $2, $3, 'open', $4, $5, $6::jsonb)
-      RETURNING id, title, severity, status, confidence, risk_score, risk_explanation, created_at, updated_at
+      RETURNING id, title, severity, status, confidence, risk_score, risk_explanation, approval_state, created_at, updated_at
     `,
     [incidentId, title, candidate.severity, candidate.confidence, riskScore, JSON.stringify(riskExplanation)]
   );
@@ -282,7 +285,29 @@ export async function markIncidentInvestigating(incidentId: string): Promise<Per
       UPDATE incidents
       SET status = 'investigating', updated_at = now()
       WHERE id = $1 AND status = 'open'
-      RETURNING id, title, severity, status, confidence, risk_score, risk_explanation, created_at, updated_at
+      RETURNING id, title, severity, status, confidence, risk_score, risk_explanation, approval_state, created_at, updated_at
+    `,
+    [incidentId]
+  );
+
+  const row = result.rows[0];
+  return row ? mapIncidentRow(row) : null;
+}
+
+// Derives incidents.approval_state from the current state of its response_actions.
+export async function recomputeIncidentApprovalState(incidentId: string): Promise<PersistedIncident | null> {
+  const result = await pool.query<IncidentRow>(
+    `
+      UPDATE incidents
+      SET approval_state = CASE
+            WHEN EXISTS (SELECT 1 FROM response_actions WHERE incident_id = $1 AND approval_state = 'pending') THEN 'pending'
+            WHEN EXISTS (SELECT 1 FROM response_actions WHERE incident_id = $1 AND approval_state = 'approved') THEN 'approved'
+            WHEN EXISTS (SELECT 1 FROM response_actions WHERE incident_id = $1) THEN 'rejected'
+            ELSE approval_state
+          END,
+          updated_at = now()
+      WHERE id = $1
+      RETURNING id, title, severity, status, confidence, risk_score, risk_explanation, approval_state, created_at, updated_at
     `,
     [incidentId]
   );
@@ -296,7 +321,7 @@ export async function getRecentIncidents(limit = 50): Promise<PersistedIncident[
 
   const result = await pool.query<IncidentRow>(
     `
-      SELECT id, title, severity, status, confidence, risk_score, risk_explanation, created_at, updated_at
+      SELECT id, title, severity, status, confidence, risk_score, risk_explanation, approval_state, created_at, updated_at
       FROM incidents
       ORDER BY updated_at DESC
       LIMIT $1
