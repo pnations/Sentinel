@@ -53,73 +53,58 @@ export type IncidentEnvelope = {
   payload: PersistedIncident;
 };
 
+export type PersistedAiAnalysis = {
+  id: string;
+  incidentId: string;
+  model: string;
+  summary: string;
+  severityAssessment: Severity;
+  confidence: number;
+  likelyExplanation: string;
+  evidence: string[];
+  affectedAssets: string[];
+  recommendedActions: string[];
+  questionsForOperator: string[];
+  createdAt: string;
+};
+
+export type AiAnalysisEnvelope = {
+  id: string;
+  type: "ai.analysis.created";
+  timestamp: string;
+  payload: PersistedAiAnalysis;
+};
+
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
-export async function getHealth(): Promise<{ service: string; status: string; timestamp: string }> {
-  const response = await fetch(`${API_URL}/api/health`);
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, init);
 
   if (!response.ok) {
-    throw new Error(`Health request failed: ${response.status}`);
+    const body = (await response.json().catch(() => null)) as { message?: string } | null;
+    throw new Error(body?.message ?? `Request failed: ${response.status} ${path}`);
   }
 
   return response.json();
 }
 
-export async function getRecentDetections(limit = 20): Promise<PersistedDetection[]> {
-  const response = await fetch(`${API_URL}/api/detections/recent?limit=${limit}`);
-
-  if (!response.ok) {
-    throw new Error(`Detections request failed: ${response.status}`);
-  }
-
-  const body = (await response.json()) as { items: PersistedDetection[] };
-  return body.items;
+export function getHealth(): Promise<{ service: string; status: string; timestamp: string }> {
+  return request("/api/health");
 }
 
-export async function getRecentIncidents(limit = 20): Promise<PersistedIncident[]> {
-  const response = await fetch(`${API_URL}/api/incidents/recent?limit=${limit}`);
-
-  if (!response.ok) {
-    throw new Error(`Incidents request failed: ${response.status}`);
-  }
-
-  const body = (await response.json()) as { items: PersistedIncident[] };
-  return body.items;
+export function analyzeIncident(incidentId: string): Promise<PersistedAiAnalysis> {
+  return request(`/api/incidents/${incidentId}/analyze`, { method: "POST" });
 }
 
-export async function simulateAttack(input: {
-  scenarioId: string;
-  severity: Severity;
-  eventType: string;
-  description: string;
-}): Promise<void> {
-  const response = await fetch(`${API_URL}/api/simulation/demo-event`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input)
-  });
-
-  if (!response.ok) {
-    throw new Error(`Simulation request failed: ${response.status}`);
-  }
-}
-
-export async function runScenario(scenarioId: string): Promise<{ runId: string; stepCount: number }> {
-  const response = await fetch(`${API_URL}/api/simulation/scenarios/${scenarioId}/run`, {
-    method: "POST"
-  });
-
-  if (!response.ok) {
-    throw new Error(`Scenario run failed: ${response.status}`);
-  }
-
-  return response.json();
+export function runScenario(scenarioId: string): Promise<{ runId: string; stepCount: number }> {
+  return request(`/api/simulation/scenarios/${scenarioId}/run`, { method: "POST" });
 }
 
 export function openStream(handlers: {
   onEvent: (event: StreamEnvelope) => void;
   onFinding: (finding: FindingEnvelope) => void;
   onIncident: (incident: IncidentEnvelope) => void;
+  onAnalysis: (analysis: AiAnalysisEnvelope) => void;
   onStatus: (connected: boolean) => void;
 }): EventSource {
   const source = new EventSource(`${API_URL}/api/stream`);
@@ -145,6 +130,11 @@ export function openStream(handlers: {
   source.addEventListener("incident.updated", (raw) => {
     const typed = raw as MessageEvent<string>;
     handlers.onIncident(JSON.parse(typed.data) as IncidentEnvelope);
+  });
+
+  source.addEventListener("ai.analysis.created", (raw) => {
+    const typed = raw as MessageEvent<string>;
+    handlers.onAnalysis(JSON.parse(typed.data) as AiAnalysisEnvelope);
   });
 
   return source;

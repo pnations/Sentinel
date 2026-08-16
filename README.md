@@ -105,11 +105,11 @@ Implemented foundation items:
 - North River bootstrap seed
 - frontend Phase 1 shell with attack scenario selector and live event feed
 - deterministic detection engine with incident correlation and risk scoring
+- AI-assisted incident investigation via OpenAI Responses API (advisory only)
 
 Next implementation targets:
 - normal operations telemetry generator variety (more templates, auto-start)
-- frontend surfacing of detections and incidents
-- AI-assisted investigation
+- response action approval workflow and audit logging
 
 ## Deployment Notes
 

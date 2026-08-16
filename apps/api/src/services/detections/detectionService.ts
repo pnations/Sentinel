@@ -276,6 +276,21 @@ export async function getRecentDetections(limit = 50): Promise<PersistedDetectio
   return result.rows.map(mapDetectionRow);
 }
 
+export async function markIncidentInvestigating(incidentId: string): Promise<PersistedIncident | null> {
+  const result = await pool.query<IncidentRow>(
+    `
+      UPDATE incidents
+      SET status = 'investigating', updated_at = now()
+      WHERE id = $1 AND status = 'open'
+      RETURNING id, title, severity, status, confidence, risk_score, risk_explanation, created_at, updated_at
+    `,
+    [incidentId]
+  );
+
+  const row = result.rows[0];
+  return row ? mapIncidentRow(row) : null;
+}
+
 export async function getRecentIncidents(limit = 50): Promise<PersistedIncident[]> {
   const safeLimit = Math.min(Math.max(limit, 1), 200);
 

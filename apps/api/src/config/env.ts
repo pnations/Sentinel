@@ -11,6 +11,7 @@ const envSchema = z.object({
     .min(1)
     .default("postgres://postgres:postgres@localhost:5432/sentinelh20"),
   OPENAI_API_KEY: z.string().optional(),
+  OPENAI_MODEL: z.string().min(1).default("gpt-4.1-mini"),
   NVD_API_KEY: z.string().optional(),
   CISA_KEV_URL: z
     .string()
