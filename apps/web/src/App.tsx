@@ -7,8 +7,8 @@ import { IncidentsPanel } from "./components/IncidentsPanel";
 import { ScenarioPanel } from "./components/ScenarioPanel";
 import { StatusGrid } from "./components/StatusGrid";
 import { useReviewerName } from "./hooks/useReviewerName";
-import { useSentinelStream } from "./hooks/useSentinelStream";
-import { analyzeIncident, decideResponseAction, getResponseActions } from "./services/api";
+import { useSentinelDemo } from "./hooks/useSentinelDemo";
+import { analyzeIncident } from "./services/ai";
 
 function App() {
   const {
@@ -17,34 +17,35 @@ function App() {
     incidents,
     analyses,
     responseActions,
-    connected,
-    health,
+    scenarioRunning,
+    runScenario,
     recordAnalysis,
-    setIncidentResponseActions,
-    recordResponseAction
-  } = useSentinelStream();
+    decideResponseAction
+  } = useSentinelDemo();
   const { name: reviewerName, setName: setReviewerName } = useReviewerName();
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
 
   const openIncidentCount = incidents.filter((incident) => incident.status !== "resolved").length;
   const selectedIncident = incidents.find((incident) => incident.id === selectedIncidentId) ?? null;
 
-  const onOpenIncident = async (incidentId: string) => {
+  const onOpenIncident = (incidentId: string) => {
     setSelectedIncidentId(incidentId);
-
-    try {
-      setIncidentResponseActions(incidentId, await getResponseActions(incidentId));
-    } catch {
-      // Drawer still opens; response actions fall back to whatever is already in memory.
-    }
   };
 
   const onInvestigate = async (incidentId: string) => {
-    recordAnalysis(await analyzeIncident(incidentId));
+    const incident = incidents.find((item) => item.id === incidentId);
+    if (!incident) {
+      throw new Error("Incident is no longer available.");
+    }
+
+    const incidentDetections = detections.filter((item) => item.incidentId === incidentId);
+    const eventIds = new Set(incidentDetections.flatMap((item) => item.eventIds));
+    const incidentEvents = events.filter((item) => eventIds.has(item.id));
+    recordAnalysis(incidentId, await analyzeIncident({ incident, detections: incidentDetections, events: incidentEvents }));
   };
 
   const onDecision = async (actionId: string, decision: "approved" | "rejected") => {
-    recordResponseAction(await decideResponseAction(actionId, decision, reviewerName));
+    decideResponseAction(actionId, decision, reviewerName);
   };
 
   return (
@@ -59,14 +60,14 @@ function App() {
       </header>
 
       <StatusGrid
-        healthStatus={health.status}
-        healthTimestamp={health.timestamp}
-        connected={connected}
+        demoReady={true}
+        sessionLabel="This browser session"
+        localSimulation={true}
         eventCount={events.length}
         openIncidentCount={openIncidentCount}
       />
 
-      <ScenarioPanel />
+      <ScenarioPanel onRunScenario={runScenario} scenarioRunning={scenarioRunning} />
       <EventStreamPanel events={events} />
       <DetectionsPanel detections={detections} />
       <IncidentsPanel incidents={incidents} onOpenIncident={onOpenIncident} />

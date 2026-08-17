@@ -8,13 +8,12 @@
     "pnpm": "^10.17.1"
   },
   "scripts": {
-    "dev": "npx pnpm -r --parallel dev",
+    "dev": "npx pnpm --filter @sentinelh20/web dev",
     "dev:web": "npx pnpm --filter @sentinelh20/web dev",
-    "dev:api": "npx pnpm --filter @sentinelh20/api dev",
-    "build": "npx pnpm -r build",
-    "typecheck": "npx pnpm -r typecheck",
-    "lint": "npx pnpm -r lint",
-    "test": "npx pnpm -r test"
+    "build": "npx pnpm --filter @sentinelh20/web build",
+    "typecheck": "npx pnpm --filter @sentinelh20/web typecheck",
+    "lint": "npx pnpm --filter @sentinelh20/web lint",
+    "test": "npx pnpm --filter @sentinelh20/web test"
   },
   "keywords": [
     "ot-security",
@@ -22,7 +21,11 @@
     "simulation",
     "react",
     "typescript",
-    "express"
+    "netlify"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@netlify/functions": "^3.1.10",
+    "openai": "^5.23.2"
+  }
 }

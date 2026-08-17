@@ -1,5 +1,5 @@
 import { formatTime } from "../lib/format";
-import type { PersistedDetection } from "../services/api";
+import type { PersistedDetection } from "../lib/domain";
 
 export function DetectionsPanel({ detections }: { detections: PersistedDetection[] }) {
   return (

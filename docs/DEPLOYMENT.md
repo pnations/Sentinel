@@ -1,46 +1,27 @@
-# Deployment Guide (v1)
+# Deployment Guide
 
 ## Target Topology
 
-- Frontend: Netlify (or equivalent static host)
-- Backend: Node host (Render/Fly.io/Railway or equivalent)
-- Database: managed PostgreSQL
+- Frontend: Netlify static site
+- AI: Netlify Function at `POST /api/analyze`
 
 ## Environment Variables
 
-Backend:
-- DATABASE_URL
+Netlify Function:
 - OPENAI_API_KEY
-- NVD_API_KEY
-- CISA_KEV_URL
-- FRONTEND_URL
-- PORT
+- OPENAI_MODEL (optional, defaults to `gpt-4.1-mini`)
 
-Frontend:
-- VITE_API_URL
+## Netlify Deployment Steps
 
-## Backend Deployment Steps
-
-1. Build backend:
-   - npx pnpm --filter @sentinelh20/api build
-2. Run migration/seed during first deploy or release step:
-   - npx pnpm --filter @sentinelh20/api db:seed
-3. Start service:
-   - npx pnpm --filter @sentinelh20/api start
-4. Restrict CORS to frontend origin using FRONTEND_URL.
-
-## Frontend Deployment Steps
-
-1. Build frontend:
-   - npx pnpm --filter @sentinelh20/web build
-2. Publish apps/web/dist.
-3. Set VITE_API_URL to deployed backend URL.
+1. Connect the repository to a Netlify site.
+2. Netlify reads `netlify.toml`, builds the Vite app with `npx pnpm --filter @sentinelh20/web build`, publishes `apps/web/dist`, and bundles `netlify/functions`.
+3. Add `OPENAI_API_KEY` in Netlify environment variables. Optionally set `OPENAI_MODEL`.
+4. Deploy. The frontend calls the same-origin `/api/analyze` redirect only when a reviewer requests AI investigation.
 
 ## Production Hardening Checklist
 
 - Enforce HTTPS.
 - Confirm no secret values are present in frontend bundle.
-- Restrict backend CORS origin.
 - Rotate API keys regularly.
-- Enable database backups.
-- Monitor backend logs and error rates.
+- Review Netlify Function logs and error rates.
+- Remember that demo data is intentionally reset on browser refresh and is never stored server-side.

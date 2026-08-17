@@ -1,4 +1,4 @@
-import type { PersistedIncident } from "../services/api";
+import type { PersistedIncident } from "../lib/domain";
 
 type IncidentsPanelProps = {
   incidents: PersistedIncident[];

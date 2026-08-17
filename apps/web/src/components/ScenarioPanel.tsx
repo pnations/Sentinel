@@ -1,24 +1,22 @@
 import { useState } from "react";
 import { scenarios } from "../lib/scenarios";
-import { runScenario } from "../services/api";
 
-export function ScenarioPanel() {
+type ScenarioPanelProps = {
+  onRunScenario: (scenarioId: string) => boolean;
+  scenarioRunning: boolean;
+};
+
+export function ScenarioPanel({ onRunScenario, scenarioRunning }: ScenarioPanelProps) {
   const [selectedScenarioId, setSelectedScenarioId] = useState(scenarios[0].id);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const selectedScenario = scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? scenarios[0];
 
-  const onSimulateAttack = async () => {
-    setLoading(true);
+  const onSimulateAttack = () => {
     setError("");
 
-    try {
-      await runScenario(selectedScenario.id);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to run scenario");
-    } finally {
-      setLoading(false);
+    if (!onRunScenario(selectedScenario.id)) {
+      setError("A simulation is already running.");
     }
   };
 
@@ -33,6 +31,7 @@ export function ScenarioPanel() {
         id="scenario-select"
         value={selectedScenarioId}
         onChange={(event) => setSelectedScenarioId(event.target.value)}
+        disabled={scenarioRunning}
       >
         {scenarios.map((scenario) => (
           <option key={scenario.id} value={scenario.id}>
@@ -44,8 +43,8 @@ export function ScenarioPanel() {
       <p className="scenario-description">{selectedScenario.description}</p>
       {error ? <p className="error">{error}</p> : null}
 
-      <button type="button" onClick={onSimulateAttack} disabled={loading}>
-        {loading ? "Injecting simulated sequence..." : "SIMULATE ATTACK"}
+      <button type="button" onClick={onSimulateAttack} disabled={scenarioRunning}>
+        {scenarioRunning ? "Injecting simulated sequence..." : "SIMULATE ATTACK"}
       </button>
     </section>
   );

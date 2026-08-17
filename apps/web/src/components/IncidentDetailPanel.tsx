@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AiAnalysisCard } from "./AiAnalysisCard";
-import type { PersistedAiAnalysis, PersistedIncident, PersistedResponseAction } from "../services/api";
+import type { PersistedAiAnalysis, PersistedIncident, PersistedResponseAction } from "../lib/domain";
 
 type IncidentDetailPanelProps = {
   incident: PersistedIncident;

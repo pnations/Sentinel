@@ -1,0 +1,10 @@
+[build]
+  command = "npx pnpm --filter @sentinelh20/web build"
+  publish = "apps/web/dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/analyze"
+  to = "/.netlify/functions/analyze"
+  status = 200
+  force = true

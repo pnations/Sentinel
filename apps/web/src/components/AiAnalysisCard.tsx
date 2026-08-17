@@ -1,4 +1,4 @@
-import type { PersistedAiAnalysis } from "../services/api";
+import type { PersistedAiAnalysis } from "../lib/domain";
 
 // Recommended actions are rendered separately as approvable Response Action cards, not here.
 export function AiAnalysisCard({ analysis }: { analysis: PersistedAiAnalysis }) {

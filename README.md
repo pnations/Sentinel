@@ -13,42 +13,33 @@ It does not scan public networks, exploit vulnerabilities, brute-force authentic
 ## Stack
 
 - Frontend: React + TypeScript + Vite
-- Backend: Node.js + TypeScript + Express
-- Database: PostgreSQL + Drizzle schema/migrations
-- Live updates: Server-Sent Events (SSE)
-- AI: OpenAI Responses API (server-side key only)
+- Simulation: browser-memory event, detection, correlation, and response state
+- AI: one Netlify Function using the OpenAI Responses API (server-side key only)
 
 ## Repository Layout
 
 - apps/web: React frontend
-- apps/api: Express backend
+- netlify/functions: server-side AI investigation endpoint
 - packages/shared: shared domain types
 - docs: architecture and deployment notes
 
 ## Prerequisites
 
 - Node.js 20+
-- PostgreSQL 14+
 
 ## Environment Setup
 
-1. Copy root env template.
-2. Copy backend and frontend env templates.
-3. Fill secret values locally.
+1. Copy the root environment template for local Netlify development, if using AI investigation.
+2. Set the same values in Netlify for deployment.
 
 Files:
 - .env.example
-- apps/api/.env.example
-- apps/web/.env.example
 
 Required variables:
-- DATABASE_URL
 - OPENAI_API_KEY
-- NVD_API_KEY
-- CISA_KEV_URL
-- FRONTEND_URL
-- PORT
-- VITE_API_URL
+
+Optional variables:
+- OPENAI_MODEL
 
 ## Install
 
@@ -58,59 +49,41 @@ Use pnpm via npx (works even if pnpm is not globally installed).
 npx pnpm install
 ```
 
-## Database Initialization
-
-Apply baseline migration and seed North River data.
-
-```bash
-npx pnpm --filter @sentinelh20/api db:seed
-```
-
-This creates required core tables and seeds:
-- OT/IT assets
-- attack scenarios
-
 ## Development
 
-Run backend and frontend concurrently:
+Run the static frontend:
 
 ```bash
 npx pnpm dev
 ```
 
-Run one service:
+To exercise the Netlify function locally, use Netlify CLI with the server-side environment values from `.env`:
 
 ```bash
-npx pnpm dev:api
-npx pnpm dev:web
+npx netlify dev
 ```
+
+All simulated events, detections, incidents, AI results, response approvals, and reviewer names exist only in browser memory. Refreshing the page clears the demo.
 
 ## Validation Commands
 
 ```bash
-npx pnpm -r typecheck
-npx pnpm -r build
-npx pnpm -r test
+npx pnpm typecheck
+npx pnpm build
+npx pnpm test
 ```
 
 ## Current Phase Status
 
 Implemented foundation items:
 - monorepo scaffolding
-- backend API skeleton
-- SSE event stream
-- simulation demo event endpoint
-- shared domain types
-- PostgreSQL schema and migration baseline
-- North River bootstrap seed
-- frontend Phase 1 shell with attack scenario selector and live event feed
+- frontend demo shell with attack scenario selector and timed live event feed
 - deterministic detection engine with incident correlation and risk scoring
-- AI-assisted incident investigation via OpenAI Responses API (advisory only)
+- AI-assisted investigation through a server-side Netlify Function (advisory only)
+- human approval or rejection of simulated recommended actions
 
-Next implementation targets:
-- normal operations telemetry generator variety (more templates, auto-start)
-- response action approval workflow and audit logging
+The demo intentionally excludes persistence, authentication, multi-user collaboration, audit logs, real telemetry ingestion, and real-world response execution.
 
 ## Deployment Notes
 
-See docs/DEPLOYMENT.md for Netlify + Node host + managed PostgreSQL guidance.
+See docs/DEPLOYMENT.md for Netlify deployment guidance.

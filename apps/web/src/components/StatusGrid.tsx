@@ -1,34 +1,34 @@
 type StatusGridProps = {
-  healthStatus: string;
-  healthTimestamp: string;
-  connected: boolean;
+  demoReady: boolean;
+  sessionLabel: string;
+  localSimulation: boolean;
   eventCount: number;
   openIncidentCount: number;
 };
 
 export function StatusGrid({
-  healthStatus,
-  healthTimestamp,
-  connected,
+  demoReady,
+  sessionLabel,
+  localSimulation,
   eventCount,
   openIncidentCount
 }: StatusGridProps) {
   return (
     <section className="status-grid" aria-label="System status panels">
       <article className="panel">
-        <h2>System Status</h2>
-        <p className={`state ${healthStatus === "ok" ? "ok" : "warn"}`}>
-          {healthStatus === "ok" ? "Operational" : "Degraded"}
+        <h2>Demo Status</h2>
+        <p className={`state ${demoReady ? "ok" : "warn"}`}>
+          {demoReady ? "Ready" : "Unavailable"}
         </p>
-        <p className="meta">Last API check: {healthTimestamp || "pending"}</p>
+        <p className="meta">{sessionLabel}</p>
       </article>
 
       <article className="panel">
-        <h2>Stream Status</h2>
-        <p className={`state ${connected ? "ok" : "warn"}`}>
-          {connected ? "Connected" : "Reconnecting"}
+        <h2>Simulation Mode</h2>
+        <p className={`state ${localSimulation ? "ok" : "warn"}`}>
+          {localSimulation ? "Local" : "Unavailable"}
         </p>
-        <p className="meta">Live updates via server-sent events</p>
+        <p className="meta">State resets when this page refreshes</p>
       </article>
 
       <article className="panel">
