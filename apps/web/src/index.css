@@ -2,8 +2,8 @@
   --bg: #09131f;
   --surface: #0b1623;
   --surface-border: #334a5e;
-  --text: #d7e6f5;
-  --text-muted: #9cb4c9;
+  --text: #e8eef5;
+  --text-muted: #9aa9b8;
   --accent: #b3522a;
   --accent-border: #dd8f5a;
   --ok: #7de8b8;
@@ -16,12 +16,12 @@
   --space-4: 1.25rem;
   --space-5: 1.5rem;
 
-  --text-body: 0.9rem;
-  --text-meta: 0.82rem;
-  --text-mono: 0.78rem;
+  --text-body: 0.95rem;
+  --text-meta: 0.84rem;
+  --text-mono: 0.8rem;
 
-  font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
-  line-height: 1.45;
+  font-family: Inter, "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+  line-height: 1.5;
   font-weight: 400;
   color: var(--text);
   background: radial-gradient(circle at 10% 0%, #0f2236, var(--bg) 65%);

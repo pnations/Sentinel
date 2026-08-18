@@ -5,7 +5,6 @@ import { EventStreamPanel } from "./components/EventStreamPanel";
 import { IncidentDetailPanel } from "./components/IncidentDetailPanel";
 import { IncidentsPanel } from "./components/IncidentsPanel";
 import { ScenarioPanel } from "./components/ScenarioPanel";
-import { StatusGrid } from "./components/StatusGrid";
 import { useReviewerName } from "./hooks/useReviewerName";
 import { useSentinelDemo } from "./hooks/useSentinelDemo";
 import { analyzeIncident } from "./services/ai";
@@ -50,30 +49,31 @@ function App() {
 
   return (
     <main className="app-shell">
-      <header className="hero">
-        <p className="tag">SentinelH20</p>
-        <h1>AI-assisted OT security monitoring for North River Water Utility</h1>
-        <p className="subtitle">
-          Deterministic detection first. AI-assisted investigation second. Human-approved
-          response always.
-        </p>
+      <header className="app-header">
+        <p className="brand">SentinelH20</p>
+        <p className="simulation-mode"><span aria-hidden="true">●</span> Simulation mode</p>
       </header>
 
-      <StatusGrid
-        demoReady={true}
-        sessionLabel="This browser session"
-        localSimulation={true}
-        eventCount={events.length}
-        openIncidentCount={openIncidentCount}
-      />
+      <section className="workspace-intro" aria-labelledby="workspace-title">
+        <p className="eyebrow">North River Water Utility</p>
+        <h1 id="workspace-title">Security operations</h1>
+        <p className="subtitle">Deterministic monitoring with human-approved response.</p>
+      </section>
 
       <ScenarioPanel onRunScenario={runScenario} scenarioRunning={scenarioRunning} />
+
+      <section className="summary-strip" aria-label="System summary">
+        <div className="summary-item ready"><span>System</span><strong>Ready</strong></div>
+        <div className="summary-item"><span>Open incidents</span><strong>{openIncidentCount}</strong></div>
+        <div className="summary-item"><span>Events this session</span><strong>{events.length}</strong></div>
+      </section>
+
       <IncidentsPanel incidents={incidents} onOpenIncident={onOpenIncident} />
 
-      <div className="supporting-panels">
-        <DetectionsPanel detections={detections} />
-        <EventStreamPanel events={events} />
-      </div>
+      <details className="supporting-telemetry">
+        <summary>Telemetry and findings <span>{detections.length} findings · {events.length} events</span></summary>
+        <div className="supporting-panels"><DetectionsPanel detections={detections} /><EventStreamPanel events={events} /></div>
+      </details>
 
       {selectedIncident ? (
         <IncidentDetailPanel
