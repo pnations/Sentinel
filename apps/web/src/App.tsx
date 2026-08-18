@@ -68,9 +68,12 @@ function App() {
       />
 
       <ScenarioPanel onRunScenario={runScenario} scenarioRunning={scenarioRunning} />
-      <EventStreamPanel events={events} />
-      <DetectionsPanel detections={detections} />
       <IncidentsPanel incidents={incidents} onOpenIncident={onOpenIncident} />
+
+      <div className="supporting-panels">
+        <DetectionsPanel detections={detections} />
+        <EventStreamPanel events={events} />
+      </div>
 
       {selectedIncident ? (
         <IncidentDetailPanel

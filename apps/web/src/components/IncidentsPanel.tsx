@@ -6,25 +6,45 @@ type IncidentsPanelProps = {
 };
 
 export function IncidentsPanel({ incidents, onOpenIncident }: IncidentsPanelProps) {
-  return (
-    <section className="panel" aria-label="Incidents">
-      <h2>Incidents</h2>
+  const prioritizedIncidents = [...incidents].sort((first, second) => second.riskScore - first.riskScore);
+  const pendingCount = prioritizedIncidents.filter((incident) => incident.approvalState === "pending").length;
 
-      <ul className="event-list">
-        {incidents.length === 0 ? (
+  return (
+    <section className="panel incident-panel" aria-label="Incident queue">
+      <div className="panel-heading incident-heading">
+        <div>
+          <p className="eyebrow">Priority queue</p>
+          <h2>Incidents</h2>
+        </div>
+        <p className="queue-summary">
+          {prioritizedIncidents.length} open · {pendingCount} awaiting review
+        </p>
+      </div>
+
+      <ul className="incident-list">
+        {prioritizedIncidents.length === 0 ? (
           <li className="empty">No incidents yet.</li>
         ) : (
-          incidents.map((incident) => (
+          prioritizedIncidents.map((incident, index) => (
             <li key={incident.id}>
-              <div className="event-meta">
-                <span className={`event-severity ${incident.severity}`}>{incident.severity}</span>
-                <span className="event-type">{incident.status}</span>
-                <span className="event-type">risk {incident.riskScore}</span>
-                <span className={`approval-pill ${incident.approvalState}`}>{incident.approvalState}</span>
+              <span className="queue-position" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div className="incident-summary">
+                <div className="event-meta">
+                  <span className={`event-severity ${incident.severity}`}>{incident.severity}</span>
+                  <span className={`approval-pill ${incident.approvalState}`}>{incident.approvalState}</span>
+                </div>
+                <p className="incident-title">{incident.title}</p>
+                <p className="meta">
+                  {incident.status} · confidence {Math.round(incident.confidence * 100)}%
+                </p>
               </div>
-              <p className="event-description">{incident.title}</p>
-
-              <button type="button" onClick={() => onOpenIncident(incident.id)}>
+              <div className="incident-risk">
+                <span>risk</span>
+                <strong>{incident.riskScore}</strong>
+              </div>
+              <button type="button" className="review-button" onClick={() => onOpenIncident(incident.id)}>
                 Review
               </button>
             </li>

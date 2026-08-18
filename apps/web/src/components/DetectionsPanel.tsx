@@ -3,10 +3,18 @@ import type { PersistedDetection } from "../lib/domain";
 
 export function DetectionsPanel({ detections }: { detections: PersistedDetection[] }) {
   return (
-    <section className="panel" aria-label="Detections">
-      <h2>Detections</h2>
+    <section className="panel detection-panel" aria-label="Detections">
+      <div className="panel-heading">
+        <div>
+          <p className="eyebrow">Deterministic rules</p>
+          <h2>Findings</h2>
+        </div>
+        <span className="panel-count" aria-label={`${detections.length} findings`}>
+          {detections.length}
+        </span>
+      </div>
 
-      <ul className="event-list">
+      <ul className="event-list compact-list">
         {detections.length === 0 ? (
           <li className="empty">No detections yet.</li>
         ) : (
