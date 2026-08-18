@@ -14,7 +14,7 @@ It does not scan public networks, exploit vulnerabilities, brute-force authentic
 
 - Frontend: React + TypeScript + Vite
 - Simulation: browser-memory event, detection, correlation, and response state
-- AI: one Netlify Function using the OpenAI Responses API (server-side key only)
+- AI: one Netlify Function using Groq's OpenAI-compatible API (server-side key only)
 
 ## Repository Layout
 
@@ -29,17 +29,17 @@ It does not scan public networks, exploit vulnerabilities, brute-force authentic
 
 ## Environment Setup
 
-1. Copy the root environment template for local Netlify development, if using AI investigation.
+1. Copy the root environment template for local AI investigation.
 2. Set the same values in Netlify for deployment.
 
 Files:
 - .env.example
 
 Required variables:
-- OPENAI_API_KEY
+- GROQ_API_KEY
 
 Optional variables:
-- OPENAI_MODEL
+- GROQ_MODEL (defaults to `openai/gpt-oss-120b`)
 
 ## Install
 
@@ -57,11 +57,7 @@ Run the static frontend:
 npx pnpm dev
 ```
 
-To exercise the Netlify function locally, use Netlify CLI with the server-side environment values from `.env`:
-
-```bash
-npx netlify dev
-```
+The Vite development server also provides `POST /api/analyze` locally. It reads `GROQ_API_KEY` and `GROQ_MODEL` from the root `.env` file only; neither value is exposed to the browser. Restart `npx pnpm dev` after changing `.env`.
 
 All simulated events, detections, incidents, AI results, response approvals, and reviewer names exist only in browser memory. Refreshing the page clears the demo.
 
