@@ -56,7 +56,7 @@ function App() {
 
       <section className="workspace-intro" aria-labelledby="workspace-title">
         <p className="eyebrow">North River Water Utility</p>
-        <h1 id="workspace-title">Security operations</h1>
+        <h1 id="workspace-title">OT security monitoring</h1>
         <p className="subtitle">Deterministic monitoring with human-approved response.</p>
       </section>
 
