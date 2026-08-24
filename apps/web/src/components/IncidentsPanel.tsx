@@ -33,7 +33,9 @@ export function IncidentsPanel({ incidents, onOpenIncident }: IncidentsPanelProp
               <div className="incident-summary">
                 <div className="event-meta">
                   <span className={`event-severity ${incident.severity}`}>{incident.severity}</span>
-                  <span className={`approval-pill ${incident.approvalState}`}>{incident.approvalState}</span>
+                  {incident.approvalState !== "none" && (
+                    <span className={`approval-pill ${incident.approvalState}`}>{incident.approvalState}</span>
+                  )}
                 </div>
                 <p className="incident-title">{incident.title}</p>
                 <p className="meta">
