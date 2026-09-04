@@ -1,6 +1,7 @@
 import type { RagChunk } from "./types.js";
 
-// Curated, short public-source references keep the demo deployable without a database.
+// Curated, short public-source references. Keeps the demo deployable without a database.
+
 export const ragCorpus: RagChunk[] = [
   {
     id: "cisa-kev-catalog",
