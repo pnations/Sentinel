@@ -53,6 +53,14 @@ export type PersistedAiAnalysis = {
   affectedAssets: string[];
   recommendedActions: string[];
   questionsForOperator: string[];
+  citations: Array<{
+    id: string;
+    source: string;
+    organization: string;
+    title: string;
+    url: string;
+    publishedAt: string;
+  }>;
   createdAt: string;
 };
 

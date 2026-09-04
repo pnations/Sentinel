@@ -2,7 +2,7 @@
 
 ## Core Pipeline
 
-Timed Scenario -> Deterministic Detection -> Incident Correlation -> Risk Assessment -> AI Investigation -> Human Review -> Approved Simulated Response
+Timed Scenario -> Deterministic Detection -> Incident Correlation -> Risk Assessment -> Public-Source Retrieval -> AI Investigation -> Human Review -> Approved Simulated Response
 
 Deterministic controls are authoritative. AI is advisory.
 
@@ -19,11 +19,15 @@ Deterministic controls are authoritative. AI is advisory.
 - `apps/web/src/lib/scenarios.ts`: scripted event sequences for the five attack simulations
 - `apps/web/src/lib/detectionEngine.ts`: deterministic rules, risk scoring, and same-asset incident correlation
 - `apps/web/src/hooks/useSentinelDemo.ts`: in-memory UI state and one-active-run scheduler
-- `netlify/functions/analyze.ts`: validates bounded incident context and requests schema-constrained AI analysis
+- `server/rag/corpus.ts`: curated public references from CISA, EPA, NIST, and MITRE
+- `server/rag/retriever.ts`: deterministic lexical retrieval over the checked-in reference corpus
+- `netlify/functions/analyze.ts`: validates bounded incident context and requests citation-aware AI analysis
 
 ## Data Lifecycle
 
-Scenario steps create events in the browser. Events pass through deterministic rules and update correlated incidents. AI investigation sends only the selected incident context to the Netlify Function, then the returned advisory analysis and recommended actions are stored locally. No database, API server, SSE channel, or browser persistence is used.
+Scenario steps create events in the browser. Events pass through deterministic rules and update correlated incidents. AI investigation sends the selected incident context to the Netlify Function, which retrieves matching references from the public-source corpus before requesting advisory analysis. The server resolves citation IDs against trusted metadata before returning citations. Results and recommended actions are stored locally. No database, API server, SSE channel, or browser persistence is used.
+
+The initial RAG implementation is intentionally lexical and curated. It proves grounded investigation and citation behavior without adding a second runtime or hosted vector database. The retrieval interface can later be backed by embeddings and `pgvector`.
 
 ## Frontend Experience
 

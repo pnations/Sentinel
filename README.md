@@ -64,6 +64,7 @@ Severity weights are critical $90$, high $70$, medium $50$, and low $30$.
 - apps/web/src/hooks/useSentinelDemo.ts: in-memory demo state and scenario scheduling
 - apps/web/src/services/ai.ts: browser client for same-origin AI requests
 - server/aiInvestigation.ts: shared server-only Groq request, prompt, and response validation
+- server/rag: curated CISA, EPA, NIST, and MITRE references with deterministic retrieval and citations
 - apps/web/vite.config.ts: local development `POST /api/analyze` middleware
 - netlify/functions: server-side AI investigation endpoint
 - packages/shared: shared domain types
@@ -115,6 +116,7 @@ All simulated events, detections, incidents, AI results, response approvals, and
 - The AI provider response is validated for the required analysis structure before it is returned to the browser.
 - Provider failures return a generic error rather than provider internals.
 - Deterministic detections and risk scoring remain authoritative; AI is an investigation aid, not a detection or execution authority.
+- AI investigations may include citations from a small, checked-in public-source corpus. Retrieved documents are untrusted reference material and cannot override system safety rules.
 
 ## Real-World Fit
 
