@@ -58,7 +58,8 @@ Severity weights are critical $90$, high $70$, medium $50$, and low $30$.
 
 ## Repository Layout
 
-- apps/web: React frontend
+- apps/web: active React frontend for the simulation demo
+- apps/api: scaffolded backend workspace for future service-layer work; not part of the current simulator runtime
 - apps/web/src/lib/scenarios.ts: five timed scenario definitions
 - apps/web/src/lib/detectionEngine.ts: deterministic rules, correlation, and risk scoring
 - apps/web/src/hooks/useSentinelDemo.ts: in-memory demo state and scenario scheduling
@@ -66,7 +67,7 @@ Severity weights are critical $90$, high $70$, medium $50$, and low $30$.
 - server/aiInvestigation.ts: shared server-only Groq request, prompt, and response validation
 - server/rag: curated CISA, EPA, NIST, and MITRE references with deterministic retrieval and citations
 - apps/web/vite.config.ts: local development `POST /api/analyze` middleware
-- netlify/functions: server-side AI investigation endpoint
+- netlify/functions: server-side AI investigation endpoint used in deployment
 - packages/shared: shared domain types
 - docs: architecture and deployment notes
 
@@ -98,15 +99,15 @@ npx pnpm install
 
 ## Development
 
-Run the static frontend:
+Run the active frontend and local AI route:
 
 ```bash
 npx pnpm dev
 ```
 
-The Vite development server also provides `POST /api/analyze` locally. It reads `GROQ_API_KEY` and `GROQ_MODEL` from the root `.env` file only; neither value is exposed to the browser. Restart `npx pnpm dev` after changing `.env`.
+The current demo runtime is the Vite frontend plus the embedded `POST /api/analyze` middleware in [apps/web/vite.config.ts](apps/web/vite.config.ts). It reads `GROQ_API_KEY` and `GROQ_MODEL` from the root `.env` file only; neither value is exposed to the browser. Restart `npx pnpm dev` after changing `.env`.
 
-All simulated events, detections, incidents, AI results, response approvals, and reviewer names exist only in browser memory. Refreshing the page clears the demo.
+The `apps/api` folder is currently a scaffold for future backend work and is not required for the running simulation. All simulated events, detections, incidents, AI results, response approvals, and reviewer names exist only in browser memory. Refreshing the page clears the demo.
 
 ## AI and Security Controls
 
@@ -140,10 +141,10 @@ Implemented foundation items:
 - monorepo scaffolding
 - frontend demo shell with attack scenario selector and timed live event feed
 - deterministic detection engine with incident correlation and risk scoring
-- AI-assisted investigation through a server-side Netlify Function (advisory only)
+- AI-assisted investigation through a server-side Netlify Function and local Vite middleware (advisory only)
 - human approval or rejection of simulated recommended actions
 
-The demo intentionally excludes persistence, authentication, multi-user collaboration, audit logs, real telemetry ingestion, and real-world response execution.
+The active runtime path is the web app plus the shared server AI module. The `apps/api` workspace remains a scaffold for future backend expansion and is not part of the current demo flow. The demo intentionally excludes persistence, authentication, multi-user collaboration, audit logs, real telemetry ingestion, and real-world response execution.
 
 ## Deployment Notes
 

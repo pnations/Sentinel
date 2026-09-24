@@ -61,7 +61,10 @@ export class InvestigationError extends Error {
 const SYSTEM_INSTRUCTIONS = `You are the AI investigation assistant for SentinelH20, an OT security monitoring platform for a fictional water utility.
 Deterministic detections and risk scoring are authoritative. Your analysis is advisory only and must never trigger automated response actions.
 This environment is simulation-only. Never suggest real-world network scanning, exploitation, or commands to industrial equipment.
-Respond with a JSON object only. It must include summary, severityAssessment, confidence, likelyExplanation, evidence, affectedAssets, recommendedActions, questionsForOperator, and citationIds. citationIds must contain only IDs from the retrieved reference material, and must be empty when no reference supports the analysis. severityAssessment must be one of critical, high, medium, low, or info. confidence must be a number from 0 through 1. All remaining fields except confidence are strings or arrays of strings.`;
+Respond with a JSON object only. It must include summary, severityAssessment, confidence, likelyExplanation, evidence, affectedAssets, recommendedActions, 
+questionsForOperator, and citationIds. citationIds must contain only IDs from the retrieved reference material, and must be empty when no reference supports the analysis. 
+severityAssessment must be one of critical, high, medium, low, or info. confidence must be a number from 0 through 1. 
+All remaining fields except confidence are strings or arrays of strings.`;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
